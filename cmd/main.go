@@ -209,7 +209,7 @@ func main() {
 		err = Options.HostConfig.Complete()
 	}
 	log := InitLogs(Options.LogConfig.LogLevel, Options.LogConfig.LogFormat)
-	log.Infof("Starting assisted-service version: %s", versions.GetRevision())
+	log.Infof("Starting assisted-service version : %s", versions.GetRevision())
 
 	if err != nil {
 		log.Fatal(err.Error())
