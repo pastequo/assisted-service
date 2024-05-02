@@ -43,6 +43,7 @@ FROM quay.io/centos/centos:stream9
 
 LABEL com.redhat.component assisted-installer
 LABEL description "Rest API & Kube Controller to install openshift cluster on baremetal instances"
+LABEL summary "Rest API & Kube Controller to install openshift cluster on baremetal instances"
 LABEL io.k8s.description "Rest API & Kube Controller to install openshift cluster on baremetal instances"
 LABEL distribution-scope public
 LABEL name assisted-service
@@ -50,6 +51,7 @@ LABEL release unknown
 LABEL version unknown
 LABEL url https://github.com/openshift/assisted-image-service
 LABEL vendor "Red Hat, Inc."
+LABEL maintainer "Red Hat"
 
 # multiarch images need it till WRKLDS-222 and https://bugzilla.redhat.com/show_bug.cgi?id=2111537 are fixed
 RUN dnf install -y --setopt=install_weak_deps=False skopeo
