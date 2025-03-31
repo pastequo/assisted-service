@@ -18,6 +18,7 @@ import (
 	manifestsapi "github.com/openshift/assisted-service/internal/manifests/api"
 	"github.com/openshift/assisted-service/internal/operators"
 	"github.com/openshift/assisted-service/internal/operators/api"
+	"github.com/openshift/assisted-service/internal/operators/authorino"
 	"github.com/openshift/assisted-service/internal/operators/cnv"
 	operatorscommon "github.com/openshift/assisted-service/internal/operators/common"
 	"github.com/openshift/assisted-service/internal/operators/fenceagentsremediation"
@@ -27,12 +28,15 @@ import (
 	"github.com/openshift/assisted-service/internal/operators/mce"
 	"github.com/openshift/assisted-service/internal/operators/mtv"
 	"github.com/openshift/assisted-service/internal/operators/nmstate"
+	"github.com/openshift/assisted-service/internal/operators/nodefeaturediscovery"
 	"github.com/openshift/assisted-service/internal/operators/nodehealthcheck"
 	"github.com/openshift/assisted-service/internal/operators/nodemaintenance"
 	"github.com/openshift/assisted-service/internal/operators/odf"
 	"github.com/openshift/assisted-service/internal/operators/openshiftai"
+	"github.com/openshift/assisted-service/internal/operators/pipelines"
 	"github.com/openshift/assisted-service/internal/operators/selfnoderemediation"
 	"github.com/openshift/assisted-service/internal/operators/serverless"
+	"github.com/openshift/assisted-service/internal/operators/servicemesh"
 	"github.com/openshift/assisted-service/models"
 	"github.com/openshift/assisted-service/pkg/conversions"
 	"github.com/openshift/assisted-service/pkg/s3wrapper"
@@ -849,8 +853,9 @@ var _ = Describe("Operators manager", func() {
 	Context("Bundles", func() {
 		// we use the real operators here, as we want to test the manager's ability to group them into bundles
 		var (
-			manager                                                                                              *operators.Manager
-			cnvOperator, odfOperator, oaiOperator, serverlessOperator, lsoOperator, nmstateOperator, mtvOperator api.Operator
+			manager                                                                                 *operators.Manager
+			cnvOperator, odfOperator, oaiOperator, serverlessOperator, lsoOperator, nmstateOperator api.Operator
+			mtvOperator, serviceMeshOperator, pipelinesOperator, authorinoOperator, nfdOperator     api.Operator
 		)
 		BeforeEach(func() {
 			cfg := cnv.Config{}
@@ -863,8 +868,15 @@ var _ = Describe("Operators manager", func() {
 			// note that lso doesn't belongs to any bundle
 			lsoOperator = lso.NewLSOperator()
 			mtvOperator = mtv.NewMTVOperator(log)
+			serviceMeshOperator = servicemesh.NewServiceMeshOperator(log)
+			pipelinesOperator = pipelines.NewPipelinesOperator(log)
+			authorinoOperator = authorino.NewAuthorinoOperator(log)
+			nfdOperator = nodefeaturediscovery.NewNodeFeatureDiscoveryOperator(log)
 
-			manager = operators.NewManagerWithOperators(log, manifestsAPI, operators.Options{}, nil, cnvOperator, odfOperator, oaiOperator, serverlessOperator, lsoOperator, nmstateOperator, mtvOperator)
+			manager = operators.NewManagerWithOperators(log, manifestsAPI, operators.Options{}, nil,
+				cnvOperator, odfOperator, oaiOperator, serverlessOperator, lsoOperator, nmstateOperator,
+				mtvOperator, serviceMeshOperator, pipelinesOperator, authorinoOperator, nfdOperator,
+			)
 		})
 
 		It("ListBundles should return the list of available bundles", func() {
@@ -875,8 +887,7 @@ var _ = Describe("Operators manager", func() {
 			}
 			Expect(bundleIDs).To(ConsistOf(
 				operatorscommon.BundleVirtualization.ID,
-				operatorscommon.BundleOpenShiftAINVIDIA.ID,
-				operatorscommon.BundleOpenShiftAIAMD.ID,
+				operatorscommon.BundleOpenShiftAI.ID,
 			))
 		})
 
@@ -890,14 +901,18 @@ var _ = Describe("Operators manager", func() {
 			))
 		})
 
-		It("OpenShift AI NVIDIA bundle contains the OpenShift AI, Serverless and ODF operators", func() {
-			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAINVIDIA.ID)
+		It("OpenShift AI bundle contains the OpenShift AI, Serverless and ODF operators", func() {
+			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAI.ID)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(bundle).ToNot(BeNil())
-			Expect(bundle.Operators).To(ContainElements(
+			Expect(bundle.Operators).To(ConsistOf(
 				oaiOperator.GetName(),
 				serverlessOperator.GetName(),
 				odfOperator.GetName(),
+				serviceMeshOperator.GetName(),
+				pipelinesOperator.GetName(),
+				authorinoOperator.GetName(),
+				nfdOperator.GetName(),
 			))
 		})
 
@@ -915,26 +930,14 @@ var _ = Describe("Operators manager", func() {
 			Expect(bundle).To(BeNil())
 		})
 
-		It("OpenShift AI NVIDIA bundle should have a description", func() {
-			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAINVIDIA.ID)
+		It("OpenShift AI bundle should have a description", func() {
+			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAI.ID)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(bundle.Description).ToNot(BeEmpty())
 		})
 
-		It("OpenShift AI NVIDIA bundle should have a title", func() {
-			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAINVIDIA.ID)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(bundle.Title).ToNot(BeEmpty())
-		})
-
-		It("OpenShift AI AMD bundle should have a description", func() {
-			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAIAMD.ID)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(bundle.Description).ToNot(BeEmpty())
-		})
-
-		It("OpenShift AI AMD bundle should have a title", func() {
-			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAIAMD.ID)
+		It("OpenShift AI bundle should have a title", func() {
+			bundle, err := manager.GetBundle(operatorscommon.BundleOpenShiftAI.ID)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(bundle.Title).ToNot(BeEmpty())
 		})
