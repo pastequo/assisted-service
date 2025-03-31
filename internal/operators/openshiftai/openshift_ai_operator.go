@@ -23,8 +23,7 @@ var Operator = models.MonitoredOperator{
 	SubscriptionName: "rhods-operator",
 	TimeoutSeconds:   30 * 60,
 	Bundles: pq.StringArray{
-		operatorscommon.BundleOpenShiftAINVIDIA.ID,
-		operatorscommon.BundleOpenShiftAIAMD.ID,
+		operatorscommon.BundleOpenShiftAI.ID,
 	},
 }
 
