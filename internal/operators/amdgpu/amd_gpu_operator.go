@@ -8,6 +8,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/openshift/assisted-service/internal/common"
 	"github.com/openshift/assisted-service/internal/operators/api"
+	"github.com/openshift/assisted-service/internal/operators/kmm"
 	"github.com/openshift/assisted-service/internal/templating"
 	"github.com/openshift/assisted-service/models"
 	"github.com/sirupsen/logrus"
@@ -22,6 +23,7 @@ var Operator = models.MonitoredOperator{
 	OperatorType:     models.OperatorTypeOlm,
 	SubscriptionName: "amd-gpu-operator",
 	TimeoutSeconds:   30 * 60,
+	DependencyOnly:   true,
 }
 
 // operator is an AMD GPU OLM operator plugin.
@@ -60,7 +62,10 @@ func (o *operator) GetFullName() string {
 
 // GetDependencies provides a list of dependencies of the Operator
 func (o *operator) GetDependencies(c *common.Cluster) ([]string, error) {
-	result := []string{}
+	result := []string{
+		kmm.Operator.Name,
+	}
+
 	return result, nil
 }
 
@@ -83,32 +88,26 @@ func (o *operator) ValidateCluster(ctx context.Context, cluster *common.Cluster)
 		ValidationId: o.GetClusterValidationID(),
 	}
 
-	// Check that there is at least one supported GPU:
-	if o.config.RequireGPU {
-		var gpuList []*models.Gpu
-		gpuList, err = o.gpusInCluster(cluster)
-		if err != nil {
-			return
-		}
-		var supportedGpuCount int64
-		for _, gpu := range gpuList {
-			if o.isSupportedGpu(gpu) {
-				supportedGpuCount++
-			}
-		}
-		if supportedGpuCount == 0 {
-			result.Reasons = append(
-				result.Reasons,
-				"The AMD GPU operator requires at least one supported AMD GPU, but there is none in "+
-					"the discovered hosts.",
-			)
+	return
+}
+
+func (o *operator) ClusterHasGPU(c *common.Cluster) (bool, error) {
+	return o.hasSupportedGPU(c)
+}
+
+func (o *operator) hasSupportedGPU(cluster *common.Cluster) (bool, error) {
+	gpuList, err := o.gpusInCluster(cluster)
+	if err != nil {
+		return false, err
+	}
+
+	for _, gpu := range gpuList {
+		if o.isSupportedGpu(gpu) {
+			return true, nil
 		}
 	}
 
-	if len(result.Reasons) > 0 {
-		result.Status = api.Failure
-	}
-	return
+	return false, nil
 }
 
 func (o *operator) gpusInCluster(cluster *common.Cluster) (result []*models.Gpu, err error) {

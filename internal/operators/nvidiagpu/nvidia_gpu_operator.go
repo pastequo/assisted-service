@@ -22,6 +22,7 @@ var Operator = models.MonitoredOperator{
 	OperatorType:     models.OperatorTypeOlm,
 	SubscriptionName: "gpu-operator-certified",
 	TimeoutSeconds:   30 * 60,
+	DependencyOnly:   true,
 }
 
 // operator is an NVIDIA GPU OLM operator plugin.
@@ -83,32 +84,26 @@ func (o *operator) ValidateCluster(ctx context.Context, cluster *common.Cluster)
 		ValidationId: o.GetClusterValidationID(),
 	}
 
-	// Check that there is at least one supported GPU:
-	if o.config.RequireGPU {
-		var gpuList []*models.Gpu
-		gpuList, err = o.gpusInCluster(cluster)
-		if err != nil {
-			return
-		}
-		var supportedGpuCount int64
-		for _, gpu := range gpuList {
-			if o.isSupportedGpu(gpu) {
-				supportedGpuCount++
-			}
-		}
-		if supportedGpuCount == 0 {
-			result.Reasons = append(
-				result.Reasons,
-				"The NVIDIA GPU operator requires at least one supported NVIDIA GPU, but there is "+
-					"none in the discovered hosts.",
-			)
+	return
+}
+
+func (o *operator) ClusterHasGPU(c *common.Cluster) (bool, error) {
+	return o.hasSupportedGPU(c)
+}
+
+func (o *operator) hasSupportedGPU(cluster *common.Cluster) (bool, error) {
+	gpuList, err := o.gpusInCluster(cluster)
+	if err != nil {
+		return false, err
+	}
+
+	for _, gpu := range gpuList {
+		if o.isSupportedGpu(gpu) {
+			return true, nil
 		}
 	}
 
-	if len(result.Reasons) > 0 {
-		result.Status = api.Failure
-	}
-	return
+	return false, nil
 }
 
 func (o *operator) gpusInCluster(cluster *common.Cluster) (result []*models.Gpu, err error) {

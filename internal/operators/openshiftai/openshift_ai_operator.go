@@ -32,10 +32,16 @@ type operator struct {
 	log       logrus.FieldLogger
 	config    *Config
 	templates *template.Template
+	vendors   []GPUVendor
+}
+
+type GPUVendor interface {
+	ClusterHasGPU(c *common.Cluster) (bool, error)
+	GetName() string
 }
 
 // NewOpenShiftAIOperator creates new OpenShift AI operator.
-func NewOpenShiftAIOperator(log logrus.FieldLogger) *operator {
+func NewOpenShiftAIOperator(log logrus.FieldLogger, vendors ...GPUVendor) *operator {
 	config := &Config{}
 	err := envconfig.Process(common.EnvConfigPrefix, config)
 	if err != nil {
@@ -49,6 +55,7 @@ func NewOpenShiftAIOperator(log logrus.FieldLogger) *operator {
 		log:       log,
 		config:    config,
 		templates: templates,
+		vendors:   vendors,
 	}
 }
 
@@ -63,7 +70,22 @@ func (o *operator) GetFullName() string {
 
 // GetDependencies provides a list of dependencies of the Operator
 func (o *operator) GetDependencies(c *common.Cluster) (result []string, err error) {
-	return nil, nil
+	ret := make([]string, 0)
+
+	for _, vendor := range o.vendors {
+		hasGPU, err := vendor.ClusterHasGPU(c)
+		if err != nil {
+			return ret, fmt.Errorf("failed to check if cluster has GPU for %s: %w", vendor.GetName(), err)
+		}
+
+		if !hasGPU {
+			continue
+		}
+
+		ret = append(ret, vendor.GetName())
+	}
+
+	return ret, nil
 }
 
 // GetClusterValidationID returns cluster validation ID for the operator.
@@ -80,6 +102,8 @@ func (o *operator) GetHostValidationID() string {
 func (o *operator) ValidateCluster(ctx context.Context, cluster *common.Cluster) (result api.ValidationResult,
 	err error) {
 	result.ValidationId = o.GetClusterValidationID()
+
+	// TODO Also check there is nvidia gpu or amd gpu ?
 
 	// Check the number of worker nodes:
 	workerCount := int64(common.NumberOfWorkers(cluster))

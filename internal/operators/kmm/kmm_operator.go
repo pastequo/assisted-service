@@ -18,6 +18,7 @@ var Operator = models.MonitoredOperator{
 	OperatorType:     models.OperatorTypeOlm,
 	SubscriptionName: "kernel-module-management",
 	TimeoutSeconds:   30 * 60,
+	DependencyOnly:   true,
 }
 
 // operator is a KMM OLM operator plugin.
