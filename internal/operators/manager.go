@@ -345,13 +345,14 @@ func (mgr *Manager) GetOperatorProperties(operatorName string) (models.OperatorP
 	return nil, errors.Errorf("Operator %s not found", operatorName)
 }
 
+// TODO: Remove Operator that are no longer relevant
 func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*models.MonitoredOperator) ([]*models.MonitoredOperator, error) {
 	allDependentOperators, err := mgr.getDependencies(cluster, operators)
 	if err != nil {
 		return operators, nil
 	}
 
-	inputOperatorNames := make([]string, len(operators))
+	inputOperatorNames := make([]string, 0, len(operators))
 	for _, inputOperator := range operators {
 		inputOperatorNames = append(inputOperatorNames, inputOperator.Name)
 	}
