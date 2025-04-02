@@ -164,9 +164,9 @@ func (r *refreshPreprocessor) recalculateOperatorDependencies(ctx context.Contex
 		if operatorAfterResolve.ClusterID == "" {
 			operatorAfterResolve.ClusterID = c.clusterId
 		}
-		operatorBeforeREsolve := operatorcommon.GetOperator(operatorsBeforeResolve, operatorAfterResolve.Name)
-		if operatorBeforeREsolve != nil {
-			if !reflect.DeepEqual(operatorAfterResolve, operatorBeforeREsolve) {
+		operatorBeforeResolve := operatorcommon.GetOperator(operatorsBeforeResolve, operatorAfterResolve.Name)
+		if operatorBeforeResolve != nil {
+			if !reflect.DeepEqual(operatorAfterResolve, operatorBeforeResolve) {
 				updatedOperators = append(updatedOperators, operatorAfterResolve)
 			}
 		} else {
@@ -213,6 +213,10 @@ func (r *refreshPreprocessor) recalculateOperatorDependencies(ctx context.Contex
 
 	// If any operator has been added or deleted then we need to update the corresponding feature usage:
 	if len(addedOperators) > 0 || len(deletedOperators) > 0 {
+		// TODO EnsurePrereq ?
+
+		// TODO Reset autoassign roles ?
+
 		err = r.recalculateOperatorFeatureUsage(c, addedOperators, deletedOperators)
 		if err != nil {
 			return err
