@@ -213,9 +213,21 @@ func (r *refreshPreprocessor) recalculateOperatorDependencies(ctx context.Contex
 
 	// If any operator has been added or deleted then we need to update the corresponding feature usage:
 	if len(addedOperators) > 0 || len(deletedOperators) > 0 {
-		// TODO EnsurePrereq ?
+		// Validate with cluster CPU architecture
+		err = r.operatorsAPI.EnsureOperatorPrerequisite(c.cluster, c.cluster.OpenshiftVersion, c.cluster.CPUArchitecture, c.cluster.MonitoredOperators)
+		if err != nil {
+			return errors.Wrapf(err, "failed to validate operator prerequisite")
+		}
 
-		// TODO Reset autoassign roles ?
+		//At this point, if any operators are updated, retrigger auto-assign
+		//role calculation. This reset is needed because operators may affect
+		//the role assignment logic.
+		resetHostRoles, err := common.ResetAutoAssignRoles(c.db, c.clusterId)
+		if err != nil {
+			return errors.Wrapf(err, "failed to reset auto assign role")
+		}
+
+		r.log.Infof("resetting auto-assing roles on cluster %s after operator setup has changed: %d hosts affected", c.clusterId.String(), resetHostRoles)
 
 		err = r.recalculateOperatorFeatureUsage(c, addedOperators, deletedOperators)
 		if err != nil {
