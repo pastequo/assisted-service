@@ -349,7 +349,7 @@ func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*mo
 	ret := make([]*models.MonitoredOperator, 0)
 	alreadyPresent := make([]string, 0)
 
-	// Compute list of operator without dependencies that could be not required anymore
+	// Compute list of operator without dependencies (they might be not required anymore)
 	// Should we try to keep the same MonitoredOperator if we re-add the dependency again ? To keep the same properties.
 	for _, operator := range operators {
 		if operator.DependencyOnly {
