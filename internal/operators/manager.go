@@ -376,7 +376,7 @@ func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*mo
 			return nil, err
 		}
 
-		operators = append(operators, operator)
+		ret = append(ret, operator)
 		alreadyPresent = append(alreadyPresent, operatorName)
 	}
 
