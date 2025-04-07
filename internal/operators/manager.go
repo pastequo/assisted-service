@@ -348,11 +348,14 @@ func (mgr *Manager) GetOperatorProperties(operatorName string) (models.OperatorP
 func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*models.MonitoredOperator) ([]*models.MonitoredOperator, error) {
 	ret := make([]*models.MonitoredOperator, 0)
 	alreadyPresent := make([]string, 0)
+	currentDependencies := make(map[string]*models.MonitoredOperator)
 
 	// Compute list of operator without dependencies (they might be not required anymore)
-	// Should we try to keep the same MonitoredOperator if we re-add the dependency again ? To keep the same properties.
 	for _, operator := range operators {
 		if operator.DependencyOnly {
+			// Keep the current dependency definition to be sure, properties and others fields are consistent
+			currentDependencies[operator.Name] = operator
+
 			continue
 		}
 
@@ -363,7 +366,7 @@ func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*mo
 	// Get dependent operators
 	allDependentOperators, err := mgr.getDependencies(cluster, ret)
 	if err != nil {
-		return ret, nil // Probably not ok to hide the error here
+		return ret, nil
 	}
 
 	for operatorName := range allDependentOperators {
@@ -371,7 +374,7 @@ func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*mo
 			continue
 		}
 
-		operator, err := mgr.GetOperatorByName(operatorName)
+		operator, err := mgr.getDependency(operatorName, currentDependencies)
 		if err != nil {
 			return nil, err
 		}
@@ -381,6 +384,14 @@ func (mgr *Manager) ResolveDependencies(cluster *common.Cluster, operators []*mo
 	}
 
 	return ret, nil
+}
+
+func (mgr *Manager) getDependency(name string, definitions map[string]*models.MonitoredOperator) (*models.MonitoredOperator, error) {
+	if ret, ok := definitions[name]; ok {
+		return ret, nil
+	}
+
+	return mgr.GetOperatorByName(name)
 }
 
 func (mgr *Manager) getDependencies(cluster *common.Cluster, operators []*models.MonitoredOperator) (map[string]bool, error) {
