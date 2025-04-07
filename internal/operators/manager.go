@@ -447,6 +447,7 @@ func (mgr *Manager) GetOperatorByName(operatorName string) (*models.MonitoredOpe
 		TimeoutSeconds:   operator.TimeoutSeconds,
 		Namespace:        operator.Namespace,
 		SubscriptionName: operator.SubscriptionName,
+		DependencyOnly:   operator.DependencyOnly,
 	}, nil
 }
 
