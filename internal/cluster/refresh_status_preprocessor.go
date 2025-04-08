@@ -212,20 +212,21 @@ func (r *refreshPreprocessor) recalculateOperatorDependencies(ctx context.Contex
 
 		// If any operator has been added or deleted then we need to update the corresponding feature usage:
 		if len(addedOperators) > 0 || len(deletedOperators) > 0 {
-			//At this point, if any operators are updated, retrigger auto-assign
-			//role calculation. This reset is needed because operators may affect
-			//the role assignment logic.
+			err = r.recalculateOperatorFeatureUsage(c, tx, addedOperators, deletedOperators)
+			if err != nil {
+				return fmt.Errorf("failed to recalculate operator feature usage: %w", err)
+			}
+		}
+
+		// If any operator has been added, updated or deleted then we might need to retrigger auto-assign role calculation.
+		// This is needed because operators may affect the role assignment logic.
+		if len(addedOperators) > 0 || len(deletedOperators) > 0 || len(updatedOperators) > 0 {
 			resetHostRoles, err := common.ResetAutoAssignRoles(tx, c.clusterId)
 			if err != nil {
 				return fmt.Errorf("failed to reset auto assign role: %w", err)
 			}
 
 			r.log.Infof("resetting auto-assign roles on cluster %s after operator setup has changed: %d hosts affected", c.clusterId.String(), resetHostRoles)
-
-			err = r.recalculateOperatorFeatureUsage(c, tx, addedOperators, deletedOperators)
-			if err != nil {
-				return fmt.Errorf("failed to recalculate operator feature usage: %w", err)
-			}
 		}
 
 		return nil
