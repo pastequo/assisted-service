@@ -9687,7 +9687,7 @@ func init() {
           "x-go-custom-tag": "gorm:\"primaryKey\""
         },
         "dependency_only": {
-          "description": "Wether the operator can't be installed without being required by another operator.",
+          "description": "Whether the operator can't be installed without being required by another operator.",
           "type": "boolean"
         },
         "name": {
@@ -20753,7 +20753,7 @@ func init() {
           "x-go-custom-tag": "gorm:\"primaryKey\""
         },
         "dependency_only": {
-          "description": "Wether the operator can't be installed without being required by another operator.",
+          "description": "Whether the operator can't be installed without being required by another operator.",
           "type": "boolean"
         },
         "name": {

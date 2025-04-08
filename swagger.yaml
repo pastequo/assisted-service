@@ -4124,7 +4124,7 @@ definitions:
             noValidation: true
       dependency_only:
         type: boolean
-        description: Wether the operator can't be installed without being required by another operator.
+        description: Whether the operator can't be installed without being required by another operator.
 
   operator-monitor-report:
     type: object

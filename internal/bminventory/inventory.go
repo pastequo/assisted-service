@@ -3121,7 +3121,7 @@ func (b *bareMetalInventory) updateClusterCPUFeatureUsage(cpuArchitecture string
 	}
 }
 
-// TODO factorize with Juan PR
+// This code is very similar to internal/cluster/refresh_status_preprocessor.go:recalculateOperatorDependencies
 func (b *bareMetalInventory) updateOperatorsData(ctx context.Context, cluster *common.Cluster, params installer.V2UpdateClusterParams, usages map[string]models.Usage, db *gorm.DB, log logrus.FieldLogger) error {
 	if params.ClusterUpdateParams.OlmOperators == nil {
 		return nil
