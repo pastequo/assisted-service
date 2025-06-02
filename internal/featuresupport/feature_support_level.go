@@ -1,9 +1,13 @@
 package featuresupport
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/go-openapi/swag"
+	"github.com/hashicorp/go-version"
 	"github.com/openshift/assisted-service/internal/common"
 	"github.com/openshift/assisted-service/models"
 	"github.com/thoas/go-funk"
@@ -122,6 +126,171 @@ func GetFeatureSupportList(openshiftVersion string, cpuArchitecture *string, pla
 	return featuresSupportList
 }
 
+func sliceIntersect[T comparable](a, b []T) []T {
+	ret := funk.Join(a, b, funk.InnerJoin)
+
+	return ret.([]T)
+}
+
+func computeSupportLevelFilters(openshiftVersion string, cpuArchitecture string, featureIDs []models.FeatureSupportLevelID) (SupportLevelFilters, error) {
+	ret := SupportLevelFilters{
+		OpenshiftVersion: openshiftVersion,
+		CPUArchitecture:  swag.String(cpuArchitecture),
+	}
+
+	// Set platform
+	platforms := sliceIntersect(featureIDs, []models.FeatureSupportLevelID{
+		models.FeatureSupportLevelIDBAREMETALPLATFORM,
+		models.FeatureSupportLevelIDNONEPLATFORM,
+		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
+		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
+		models.FeatureSupportLevelIDEXTERNALPLATFORM,
+	})
+
+	if len(platforms) != 1 {
+		return ret, fmt.Errorf("platform feature must be set exactly once, here: %s", platforms)
+	}
+
+	var platform models.PlatformType
+
+	switch platforms[0] {
+	case models.FeatureSupportLevelIDBAREMETALPLATFORM:
+		platform = models.PlatformTypeBaremetal
+	case models.FeatureSupportLevelIDNONEPLATFORM:
+		platform = models.PlatformTypeNone
+	case models.FeatureSupportLevelIDNUTANIXINTEGRATION:
+		platform = models.PlatformTypeNutanix
+	case models.FeatureSupportLevelIDVSPHEREINTEGRATION:
+		platform = models.PlatformTypeVsphere
+	case models.FeatureSupportLevelIDEXTERNALPLATFORM:
+		platform = models.PlatformTypeExternal
+	}
+
+	ret.PlatformType = &platform
+
+	// Set external platform name
+	externalPlatformNames := sliceIntersect(featureIDs, []models.FeatureSupportLevelID{
+		models.FeatureSupportLevelIDEXTERNALPLATFORMOCI,
+	})
+
+	if len(externalPlatformNames) > 1 {
+		return ret, fmt.Errorf("external platform name feature cannot be set multiple time, here: %s", externalPlatformNames)
+	}
+
+	if len(externalPlatformNames) == 1 {
+		var externalPlatformName string
+
+		switch externalPlatformNames[0] {
+		case models.FeatureSupportLevelIDEXTERNALPLATFORMOCI:
+			externalPlatformName = "oci"
+		}
+
+		ret.ExternalPlatformName = &externalPlatformName
+	}
+
+	return ret, nil
+}
+
+func GetFeatureSupports(ctx context.Context, openshiftVersion string, cpuArchitecture string, requireFeatureIDs []models.FeatureSupportLevelID) (models.FeatureSupports, error) {
+	// First check all params are known
+	_, err := version.NewVersion(openshiftVersion)
+	if err != nil {
+		return nil, fmt.Errorf("invalid openshift version: %w", err)
+	}
+
+	cpuArchitectureFeatureID, ok := cpuArchitectureFeatureIdMap[cpuArchitecture]
+	if !ok {
+		return nil, fmt.Errorf("unknown cpu architecture: %s", cpuArchitecture)
+	}
+
+	for _, featureID := range requireFeatureIDs {
+		if _, ok := featuresList[models.FeatureSupportLevelID(featureID)]; !ok {
+			return nil, fmt.Errorf("unknown feature id: %s", featureID)
+		}
+	}
+
+	// A platform feature must be set
+	filter, err := computeSupportLevelFilters(openshiftVersion, cpuArchitecture, requireFeatureIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	// Then validate provided features are compatible with each other
+	if _, ok := cpuFeaturesList[cpuArchitectureFeatureID]; !ok {
+		// This should never happen
+		return nil, fmt.Errorf("internal error about CPU Architecture Feature: %s", cpuArchitectureFeatureID)
+	}
+
+	if !isArchitectureSupported(cpuArchitectureFeatureID, openshiftVersion) {
+		return nil, fmt.Errorf("cannot use %s architecture because it's not compatible on version %s of OpenShift", cpuArchitecture, openshiftVersion)
+	}
+
+	var featureCompatibilityError error
+	for _, featureID := range requireFeatureIDs {
+		feature := featuresList[models.FeatureSupportLevelID(featureID)]
+
+		if !isFeatureCompatibleWithArchitecture(feature, openshiftVersion, cpuArchitecture) {
+			featureCompatibilityError = errors.Join(
+				featureCompatibilityError,
+				fmt.Errorf("cannot use %s because it's not compatible with the %s architecture on version %s of OpenShift", featureID, cpuArchitecture, openshiftVersion),
+			)
+
+			continue
+		}
+
+		incompatibleFeatures := sliceIntersect(feature.getIncompatibleFeatures(openshiftVersion), requireFeatureIDs)
+		if len(incompatibleFeatures) > 0 {
+			featureCompatibilityError = errors.Join(
+				featureCompatibilityError,
+				fmt.Errorf("cannot use %s because it's not compatible with %s", featureID, incompatibleFeatures),
+			)
+
+			continue
+		}
+	}
+
+	if featureCompatibilityError != nil {
+		return nil, featureCompatibilityError
+	}
+
+	// Finally generate result
+	ret := make(models.FeatureSupports, 0)
+	for featureID, feature := range featuresList {
+		id := featureID
+		supportLevel := feature.getSupportLevel(filter)
+
+		if supportLevel == "" {
+			continue
+		}
+
+		feat := models.FeatureSupport{
+			FeatureSupportLevelID: &id,
+			Name:                  swag.String(feature.GetName()),
+			SupportLevel:          &supportLevel,
+		}
+
+		isFeatureCompatibleWithArchitecture := isFeatureCompatibleWithArchitecture(feature, openshiftVersion, cpuArchitecture)
+		if !isFeatureCompatibleWithArchitecture {
+			feat.Reason = &models.FeatureSupportReason{
+				InvalidCPUArchitecture: true,
+			}
+		}
+
+		incompatibleFeatureIDs := sliceIntersect(feature.getIncompatibleFeatures(openshiftVersion), requireFeatureIDs)
+		if len(incompatibleFeatureIDs) > 0 {
+			if feat.Reason == nil {
+				feat.Reason = &models.FeatureSupportReason{}
+			}
+
+			feat.Reason.IncompatibleFeatureIDs = incompatibleFeatureIDs
+		}
+
+		ret = append(ret, feat)
+	}
+
+	return ret, nil
+}
+
 // IsFeatureAvailable Get the support level of a given feature, cpuArchitecture is optional
 // with default value of x86_64
 func IsFeatureAvailable(featureId models.FeatureSupportLevelID, openshiftVersion string, cpuArchitecture *string) bool {
@@ -139,11 +308,9 @@ func IsFeatureAvailable(featureId models.FeatureSupportLevelID, openshiftVersion
 
 func isFeatureCompatible(openshiftVersion string, feature SupportLevelFeature, features ...SupportLevelFeature) *SupportLevelFeature {
 	incompatibilities := feature.getIncompatibleFeatures(openshiftVersion)
-	if incompatibilities != nil {
-		for _, f := range features {
-			if funk.Contains(*incompatibilities, f.getId()) {
-				return &f
-			}
+	for _, f := range features {
+		if slices.Contains(incompatibilities, f.getId()) {
+			return &f
 		}
 	}
 

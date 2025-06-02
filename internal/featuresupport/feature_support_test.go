@@ -1048,14 +1048,14 @@ var _ = Describe("V2ListFeatureSupportLevels API", func() {
 
 					incompatibleFeatures := feature.getIncompatibleFeatures("")
 					if incompatibleFeatures != nil {
-						for _, incompatibleFeatureId := range *incompatibleFeatures {
+						for _, incompatibleFeatureId := range incompatibleFeatures {
 							incompatibleFeature := featuresList[incompatibleFeatureId]
 							By(fmt.Sprintf("Feature  %s with incompatible feature %s", featureId, incompatibleFeatureId), func() {
 								incompatibleFeatures2 := incompatibleFeature.getIncompatibleFeatures("")
 								if incompatibleFeatures2 == nil {
-									incompatibleFeatures2 = &[]models.FeatureSupportLevelID{}
+									incompatibleFeatures2 = []models.FeatureSupportLevelID{}
 								}
-								Expect(*incompatibleFeatures2).To(ContainElement(featureId))
+								Expect(incompatibleFeatures2).To(ContainElement(featureId))
 							})
 						}
 					}

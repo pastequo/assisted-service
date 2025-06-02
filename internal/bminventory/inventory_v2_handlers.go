@@ -18,6 +18,7 @@ import (
 	"github.com/openshift/assisted-service/internal/common"
 	eventgen "github.com/openshift/assisted-service/internal/common/events"
 	"github.com/openshift/assisted-service/internal/constants"
+	"github.com/openshift/assisted-service/internal/featuresupport"
 	"github.com/openshift/assisted-service/internal/gencrypto"
 	"github.com/openshift/assisted-service/internal/host/hostutil"
 	"github.com/openshift/assisted-service/internal/imageservice"
@@ -57,6 +58,20 @@ func (b *bareMetalInventory) GetSupportedFeatures(ctx context.Context, params in
 	}
 
 	return installer.NewGetSupportedFeaturesOK().WithPayload(&installer.GetSupportedFeaturesOKBody{Features: supportLevelList})
+}
+
+func (b *bareMetalInventory) GetFeatureSupports(ctx context.Context, params installer.GetFeatureSupportsParams) middleware.Responder {
+	featureIDs := make([]models.FeatureSupportLevelID, 0, len(params.FeatureIds))
+	for _, feature := range params.FeatureIds {
+		featureIDs = append(featureIDs, models.FeatureSupportLevelID(feature))
+	}
+
+	ret, err := featuresupport.GetFeatureSupports(ctx, params.OpenshiftVersion, *params.CPUArchitecture, featureIDs)
+	if err != nil {
+		return common.NewApiError(http.StatusBadRequest, err)
+	}
+
+	return installer.NewGetFeatureSupportsOK().WithPayload(ret)
 }
 
 func (b *bareMetalInventory) GetSupportedArchitectures(ctx context.Context, params installer.GetSupportedArchitecturesParams) middleware.Responder {

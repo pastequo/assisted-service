@@ -3767,6 +3767,55 @@ paths:
           schema:
             $ref: '#/definitions/error'
 
+  /v2/support-levels/feature-supports:
+    get:
+      tags:
+        - installer
+      security:
+        - userAuth: [admin, read-only-admin, user]
+      operationId: GetFeatureSupports
+      description: Retrieves the features support level of all features for a given openshift version, cpu architecture, platform & mandatory features.
+      parameters:
+        - in: query
+          name: openshift_version
+          type: string
+          description: Version of the OpenShift cluster.
+          required: true
+        - in: query
+          name: cpu_architecture
+          description: The CPU architecture of the image (x86_64/arm64/etc).
+          type: string
+          # TODO: remove arm64 when AI moves to using aarch64
+          enum: [ 'x86_64', 'aarch64', 'arm64','ppc64le','s390x','multi' ]
+          default: x86_64
+        - in: query
+          name: feature_ids
+          description: List of feature that are required.
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: Success.
+          schema:
+            $ref: '#/definitions/feature-supports'
+        "400":
+          description: Error.
+          schema:
+            $ref: '#/definitions/error'
+        "401":
+          description: Unauthorized.
+          schema:
+            $ref: '#/definitions/infra_error'
+        "403":
+          description: Forbidden.
+          schema:
+            $ref: '#/definitions/infra_error'
+        "503":
+          description: Unavailable.
+          schema:
+            $ref: '#/definitions/error'
+
   /v2/support-levels/features:
     get:
       tags:
@@ -4228,6 +4277,40 @@ definitions:
   support-level:
     type: string
     enum: [ supported, unsupported, tech-preview, dev-preview, unavailable ]
+
+  feature-supports:
+    type: array
+    items:
+      $ref: '#/definitions/feature-support'
+
+  feature-support:
+    type: object
+    x-nullable: false
+    required:
+      - feature-support-level-id
+      - name
+      - support-level
+    properties:
+      feature-support-level-id:
+        $ref: '#/definitions/feature-support-level-id'
+      name:
+        type: string
+        description: Feature name.
+      support-level:
+        $ref: '#/definitions/support-level'
+      reason:
+        description: Reason why the support level is not supported or unavailable.
+        type: object
+        properties:
+          invalidCPUArchitecture:
+            type: boolean
+            description: Indicates whether the feature is compatible or not with the CPU architecture.
+          incompatibleFeatureIDs:
+            type: array
+            description: List of incompatible feature IDs.
+            x-nullable: true
+            items:
+              $ref: '#/definitions/feature-support-level-id'
 
   feature-support-level-id:
     type: string

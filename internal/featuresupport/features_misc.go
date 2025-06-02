@@ -40,8 +40,8 @@ func (feature *SnoFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *SnoFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *SnoFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDODF,
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
@@ -57,13 +57,13 @@ func (feature *SnoFeature) getIncompatibleFeatures(string) *[]models.FeatureSupp
 	}
 }
 
-func (feature *SnoFeature) getIncompatibleArchitectures(openshiftVersion *string) *[]models.ArchitectureSupportLevelID {
+func (feature *SnoFeature) getIncompatibleArchitectures(openshiftVersion *string) []models.ArchitectureSupportLevelID {
 	if isGreater, _ := common.BaseVersionGreaterOrEqual("4.13", *openshiftVersion); isGreater {
 		return nil
 	}
 
 	// Not supported when OCP version is less than 4.13
-	return &[]models.ArchitectureSupportLevelID{
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
@@ -105,8 +105,8 @@ func (feature *TnaFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelTechPreview
 }
 
-func (feature *TnaFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *TnaFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNONEPLATFORM,
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
@@ -115,7 +115,7 @@ func (feature *TnaFeature) getIncompatibleFeatures(string) *[]models.FeatureSupp
 	}
 }
 
-func (feature *TnaFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *TnaFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
@@ -145,16 +145,16 @@ func (feature *CustomManifestFeature) getSupportLevel(_ SupportLevelFilters) mod
 	return models.SupportLevelSupported
 }
 
-func (feature *CustomManifestFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
+func (feature *CustomManifestFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
 	return nil
 }
 
-func (feature *CustomManifestFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *CustomManifestFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
 func (feature *CustomManifestFeature) getFeatureActiveLevel(_ *common.Cluster, _ *models.InfraEnv, _ *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
-	return activeLeveNotRelevant
+	return activeLevelNotRelevant
 }
 
 // SingleNodeExpansionFeature
@@ -186,14 +186,14 @@ func (feature *SingleNodeExpansionFeature) getSupportLevel(filters SupportLevelF
 }
 
 func (feature *SingleNodeExpansionFeature) getFeatureActiveLevel(_ *common.Cluster, _ *models.InfraEnv, _ *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
-	return activeLeveNotRelevant
+	return activeLevelNotRelevant
 }
 
-func (feature *SingleNodeExpansionFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
+func (feature *SingleNodeExpansionFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
 	return nil
 }
 
-func (feature *SingleNodeExpansionFeature) getIncompatibleArchitectures(openshiftVersion *string) *[]models.ArchitectureSupportLevelID {
+func (feature *SingleNodeExpansionFeature) getIncompatibleArchitectures(openshiftVersion *string) []models.ArchitectureSupportLevelID {
 	return feature.snoFeature.getIncompatibleArchitectures(openshiftVersion)
 }
 
@@ -220,12 +220,12 @@ func (feature *MinimalIso) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *MinimalIso) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
+func (feature *MinimalIso) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
 	return nil
 }
 
-func (feature *MinimalIso) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *MinimalIso) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 	}
 }
@@ -281,13 +281,13 @@ func (feature *FullIso) getSupportLevel(filters SupportLevelFilters) models.Supp
 	return models.SupportLevelSupported
 }
 
-func (feature *FullIso) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *FullIso) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDEXTERNALPLATFORMOCI,
 	}
 }
 
-func (feature *FullIso) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *FullIso) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
@@ -345,11 +345,11 @@ func (f *skipMcoReboot) getSupportLevel(filters SupportLevelFilters) models.Supp
 	return models.SupportLevelSupported
 }
 
-func (f *skipMcoReboot) getIncompatibleFeatures(openshiftVersion string) *[]models.FeatureSupportLevelID {
+func (f *skipMcoReboot) getIncompatibleFeatures(openshiftVersion string) []models.FeatureSupportLevelID {
 	return nil
 }
 
-func (f *skipMcoReboot) getIncompatibleArchitectures(openshiftVersion *string) *[]models.ArchitectureSupportLevelID {
+func (f *skipMcoReboot) getIncompatibleArchitectures(openshiftVersion *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
@@ -393,8 +393,8 @@ func (f *NonStandardHAControlPlane) getSupportLevel(filters SupportLevelFilters)
 	return models.SupportLevelSupported
 }
 
-func (f *NonStandardHAControlPlane) getIncompatibleFeatures(openshiftVersion string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *NonStandardHAControlPlane) getIncompatibleFeatures(openshiftVersion string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDEXTERNALPLATFORM,
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
@@ -402,8 +402,8 @@ func (f *NonStandardHAControlPlane) getIncompatibleFeatures(openshiftVersion str
 	}
 }
 
-func (f *NonStandardHAControlPlane) getIncompatibleArchitectures(openshiftVersion *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (f *NonStandardHAControlPlane) getIncompatibleArchitectures(openshiftVersion *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,

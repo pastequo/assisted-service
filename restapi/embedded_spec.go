@@ -5882,6 +5882,95 @@ func init() {
         }
       }
     },
+    "/v2/support-levels/feature-supports": {
+      "get": {
+        "security": [
+          {
+            "userAuth": [
+              "admin",
+              "read-only-admin",
+              "user"
+            ]
+          }
+        ],
+        "description": "Retrieves the features support levels for each OpenShift version.",
+        "tags": [
+          "installer"
+        ],
+        "operationId": "GetFeatureSupports",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Version of the OpenShift cluster.",
+            "name": "openshift_version",
+            "in": "query",
+            "required": true
+          },
+          {
+            "enum": [
+              "x86_64",
+              "aarch64",
+              "arm64",
+              "ppc64le",
+              "s390x",
+              "multi"
+            ],
+            "type": "string",
+            "default": "x86_64",
+            "description": "The CPU architecture of the image (x86_64/arm64/etc).",
+            "name": "cpu_architecture",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of feature that is required.",
+            "name": "feature_ids",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "schema": {
+              "$ref": "#/definitions/feature-supports"
+            }
+          },
+          "400": {
+            "description": "Error.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/infra_error"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/infra_error"
+            }
+          },
+          "404": {
+            "description": "Error.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "503": {
+            "description": "Unavailable.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/v2/support-levels/features": {
       "get": {
         "security": [
@@ -7900,6 +7989,44 @@ func init() {
         "$ref": "#/definitions/event"
       }
     },
+    "feature-support": {
+      "type": "object",
+      "required": [
+        "feature-support-level-id",
+        "name",
+        "support-level"
+      ],
+      "properties": {
+        "feature-support-level-id": {
+          "$ref": "#/definitions/feature-support-level-id"
+        },
+        "name": {
+          "description": "Feature name.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Reason why the support level is not supported or unavailable.",
+          "type": "object",
+          "properties": {
+            "incompatibleFeatureIDs": {
+              "description": "List of incompatible feature IDs.",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/feature-support-level-id"
+              }
+            },
+            "invalidCPUArchitecture": {
+              "description": "Indicates whether the feature is compatible or not with the CPU architecture.",
+              "type": "boolean"
+            }
+          }
+        },
+        "support-level": {
+          "$ref": "#/definitions/support-level"
+        }
+      },
+      "x-nullable": false
+    },
     "feature-support-level-id": {
       "type": "string",
       "enum": [
@@ -7949,6 +8076,12 @@ func init() {
         "NODE_MAINTENANCE",
         "KUBE_DESCHEDULER"
       ]
+    },
+    "feature-supports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/feature-support"
+      }
     },
     "finalizing-stage": {
       "description": "Cluster finalizing stage managed by controller",
@@ -16898,6 +17031,95 @@ func init() {
         }
       }
     },
+    "/v2/support-levels/feature-supports": {
+      "get": {
+        "security": [
+          {
+            "userAuth": [
+              "admin",
+              "read-only-admin",
+              "user"
+            ]
+          }
+        ],
+        "description": "Retrieves the features support levels for each OpenShift version.",
+        "tags": [
+          "installer"
+        ],
+        "operationId": "GetFeatureSupports",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Version of the OpenShift cluster.",
+            "name": "openshift_version",
+            "in": "query",
+            "required": true
+          },
+          {
+            "enum": [
+              "x86_64",
+              "aarch64",
+              "arm64",
+              "ppc64le",
+              "s390x",
+              "multi"
+            ],
+            "type": "string",
+            "default": "x86_64",
+            "description": "The CPU architecture of the image (x86_64/arm64/etc).",
+            "name": "cpu_architecture",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of feature that is required.",
+            "name": "feature_ids",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "schema": {
+              "$ref": "#/definitions/feature-supports"
+            }
+          },
+          "400": {
+            "description": "Error.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "schema": {
+              "$ref": "#/definitions/infra_error"
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "schema": {
+              "$ref": "#/definitions/infra_error"
+            }
+          },
+          "404": {
+            "description": "Error.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "503": {
+            "description": "Unavailable.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/v2/support-levels/features": {
       "get": {
         "security": [
@@ -17178,6 +17400,23 @@ func init() {
         }
       },
       "x-go-name": "DomainResolutionResponseDomain"
+    },
+    "FeatureSupportReason": {
+      "description": "Reason why the support level is not supported or unavailable.",
+      "type": "object",
+      "properties": {
+        "incompatibleFeatureIDs": {
+          "description": "List of incompatible feature IDs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/feature-support-level-id"
+          }
+        },
+        "invalidCPUArchitecture": {
+          "description": "Indicates whether the feature is compatible or not with the CPU architecture.",
+          "type": "boolean"
+        }
+      }
     },
     "HostRegistrationResponseAO1NextStepRunnerCommand": {
       "description": "Command for starting the next step runner",
@@ -19001,6 +19240,44 @@ func init() {
         "$ref": "#/definitions/event"
       }
     },
+    "feature-support": {
+      "type": "object",
+      "required": [
+        "feature-support-level-id",
+        "name",
+        "support-level"
+      ],
+      "properties": {
+        "feature-support-level-id": {
+          "$ref": "#/definitions/feature-support-level-id"
+        },
+        "name": {
+          "description": "Feature name.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Reason why the support level is not supported or unavailable.",
+          "type": "object",
+          "properties": {
+            "incompatibleFeatureIDs": {
+              "description": "List of incompatible feature IDs.",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/feature-support-level-id"
+              }
+            },
+            "invalidCPUArchitecture": {
+              "description": "Indicates whether the feature is compatible or not with the CPU architecture.",
+              "type": "boolean"
+            }
+          }
+        },
+        "support-level": {
+          "$ref": "#/definitions/support-level"
+        }
+      },
+      "x-nullable": false
+    },
     "feature-support-level-id": {
       "type": "string",
       "enum": [
@@ -19050,6 +19327,12 @@ func init() {
         "NODE_MAINTENANCE",
         "KUBE_DESCHEDULER"
       ]
+    },
+    "feature-supports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/feature-support"
+      }
     },
     "finalizing-stage": {
       "description": "Cluster finalizing stage managed by controller",

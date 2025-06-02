@@ -79,14 +79,14 @@ func (feature *BaremetalPlatformFeature) getFeatureActiveLevel(cluster *common.C
 	return activeLevelNotActive
 }
 
-func (feature *BaremetalPlatformFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *BaremetalPlatformFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDPLATFORMMANAGEDNETWORKING,
 		models.FeatureSupportLevelIDUSERMANAGEDNETWORKING,
 	}
 }
 
-func (feature *BaremetalPlatformFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *BaremetalPlatformFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
@@ -121,8 +121,8 @@ func (feature *NonePlatformFeature) getFeatureActiveLevel(cluster *common.Cluste
 	return activeLevelNotActive
 }
 
-func (feature *NonePlatformFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *NonePlatformFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDTNA,
 		models.FeatureSupportLevelIDVIPAUTOALLOC,
 		models.FeatureSupportLevelIDCLUSTERMANAGEDNETWORKING,
@@ -130,7 +130,7 @@ func (feature *NonePlatformFeature) getIncompatibleFeatures(string) *[]models.Fe
 	}
 }
 
-func (feature *NonePlatformFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *NonePlatformFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
@@ -176,8 +176,8 @@ func (feature *NutanixIntegrationFeature) getFeatureActiveLevel(cluster *common.
 	return activeLevelNotActive
 }
 
-func (feature *NutanixIntegrationFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *NutanixIntegrationFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 		models.FeatureSupportLevelIDTNA,
 		models.FeatureSupportLevelIDUSERMANAGEDNETWORKING,
@@ -193,8 +193,8 @@ func (feature *NutanixIntegrationFeature) getIncompatibleFeatures(string) *[]mod
 	}
 }
 
-func (feature *NutanixIntegrationFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *NutanixIntegrationFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
@@ -236,7 +236,7 @@ func (feature *VsphereIntegrationFeature) getFeatureActiveLevel(cluster *common.
 	return activeLevelNotActive
 }
 
-func (feature *VsphereIntegrationFeature) getIncompatibleFeatures(openshiftVersion string) *[]models.FeatureSupportLevelID {
+func (feature *VsphereIntegrationFeature) getIncompatibleFeatures(openshiftVersion string) []models.FeatureSupportLevelID {
 	incompatibleFeatures := []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 		models.FeatureSupportLevelIDTNA,
@@ -252,11 +252,11 @@ func (feature *VsphereIntegrationFeature) getIncompatibleFeatures(openshiftVersi
 		incompatibleFeatures = append(incompatibleFeatures, models.FeatureSupportLevelIDDUALSTACK)
 	}
 
-	return &incompatibleFeatures
+	return incompatibleFeatures
 }
 
-func (feature *VsphereIntegrationFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *VsphereIntegrationFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
@@ -293,8 +293,8 @@ func (feature *OciIntegrationFeature) getSupportLevel(filters SupportLevelFilter
 	return models.SupportLevelUnavailable
 }
 
-func (feature *OciIntegrationFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *OciIntegrationFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDTNA,
 		models.FeatureSupportLevelIDCLUSTERMANAGEDNETWORKING,
 		models.FeatureSupportLevelIDVIPAUTOALLOC,
@@ -308,8 +308,8 @@ func (feature *OciIntegrationFeature) getIncompatibleFeatures(string) *[]models.
 	}
 }
 
-func (feature *OciIntegrationFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *OciIntegrationFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
@@ -350,8 +350,8 @@ func (feature *ExternalPlatformFeature) getSupportLevel(filters SupportLevelFilt
 	return models.SupportLevelSupported
 }
 
-func (feature *ExternalPlatformFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *ExternalPlatformFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDTNA,
 		models.FeatureSupportLevelIDCLUSTERMANAGEDNETWORKING,
 		models.FeatureSupportLevelIDVIPAUTOALLOC,
@@ -361,7 +361,7 @@ func (feature *ExternalPlatformFeature) getIncompatibleFeatures(string) *[]model
 	}
 }
 
-func (feature *ExternalPlatformFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *ExternalPlatformFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 

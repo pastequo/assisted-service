@@ -3,12 +3,12 @@ package featuresupport
 import (
 	"fmt"
 	"reflect"
+	"slices"
 
 	"github.com/go-openapi/swag"
 	"github.com/openshift/assisted-service/internal/common"
 	"github.com/openshift/assisted-service/models"
 	"github.com/sirupsen/logrus"
-	"github.com/thoas/go-funk"
 )
 
 func GetSupportLevel[T models.FeatureSupportLevelID | models.ArchitectureSupportLevelID](featureId T, filters interface{}) models.SupportLevel {
@@ -117,8 +117,6 @@ func IsFeatureCompatibleWithArchitecture(feature models.FeatureSupportLevelID, o
 func isFeatureCompatibleWithArchitecture(feature SupportLevelFeature, openshiftVersion, cpuArchitecture string) bool {
 	architectureID := cpuArchitectureFeatureIdMap[cpuArchitecture]
 	incompatibilitiesArchitectures := feature.getIncompatibleArchitectures(&openshiftVersion)
-	if incompatibilitiesArchitectures != nil && funk.Contains(*incompatibilitiesArchitectures, architectureID) {
-		return false
-	}
-	return true
+
+	return !slices.Contains(incompatibilitiesArchitectures, architectureID)
 }

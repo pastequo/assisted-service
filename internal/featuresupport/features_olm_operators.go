@@ -84,7 +84,7 @@ func (feature *LvmFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *mod
 	return activeLevelNotActive
 }
 
-func (feature *LvmFeature) getIncompatibleFeatures(OCPVersion string) *[]models.FeatureSupportLevelID {
+func (feature *LvmFeature) getIncompatibleFeatures(OCPVersion string) []models.FeatureSupportLevelID {
 	incompatibleFeatures := []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
@@ -97,11 +97,11 @@ func (feature *LvmFeature) getIncompatibleFeatures(OCPVersion string) *[]models.
 			models.FeatureSupportLevelIDCLUSTERMANAGEDNETWORKING,
 		)
 	}
-	return &incompatibleFeatures
+	return incompatibleFeatures
 }
 
-func (feature *LvmFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *LvmFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
@@ -135,14 +135,14 @@ func (feature *OdfFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *OdfFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *OdfFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 	}
 }
 
-func (feature *OdfFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *OdfFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 		models.FeatureSupportLevelIDLVM,
 		models.FeatureSupportLevelIDEXTERNALPLATFORMOCI,
@@ -187,14 +187,14 @@ func (feature *CnvFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *CnvFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *CnvFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
 	}
 }
 
-func (feature *CnvFeature) getIncompatibleArchitectures(OCPVersion *string) *[]models.ArchitectureSupportLevelID {
+func (feature *CnvFeature) getIncompatibleArchitectures(OCPVersion *string) []models.ArchitectureSupportLevelID {
 	incompatibleArchitecture := []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
@@ -203,7 +203,7 @@ func (feature *CnvFeature) getIncompatibleArchitectures(OCPVersion *string) *[]m
 		incompatibleArchitecture = append(incompatibleArchitecture, models.ArchitectureSupportLevelIDARM64ARCHITECTURE)
 	}
 
-	return &incompatibleArchitecture
+	return incompatibleArchitecture
 }
 
 func (feature *CnvFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -236,12 +236,12 @@ func (feature *LsoFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *LsoFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
+func (feature *LsoFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
 	return nil
 }
 
-func (feature *LsoFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *LsoFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 	}
 }
@@ -285,13 +285,13 @@ func (feature *MceFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *MceFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *MceFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 	}
 }
 
-func (feature *MceFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *MceFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	return nil
 }
 
@@ -333,17 +333,17 @@ func (feature *MtvFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelSupported
 }
 
-func (feature *MtvFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *MtvFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	incompatibleArchitecture := []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
-	return &incompatibleArchitecture
+	return incompatibleArchitecture
 }
 
-func (feature *MtvFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *MtvFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
 	}
@@ -383,15 +383,15 @@ func (f *NodeFeatureDiscoveryFeature) getSupportLevel(filters SupportLevelFilter
 	return models.SupportLevelDevPreview
 }
 
-func (f *NodeFeatureDiscoveryFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (f *NodeFeatureDiscoveryFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 	}
 }
 
-func (f *NodeFeatureDiscoveryFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *NodeFeatureDiscoveryFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *NodeFeatureDiscoveryFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -424,16 +424,16 @@ func (f *NvidiaGPUFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelDevPreview
 }
 
-func (f *NvidiaGPUFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (f *NvidiaGPUFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 	}
 }
 
-func (f *NvidiaGPUFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *NvidiaGPUFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *NvidiaGPUFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -466,12 +466,12 @@ func (f *PipelinesFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelDevPreview
 }
 
-func (f *PipelinesFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *PipelinesFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *PipelinesFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *PipelinesFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *PipelinesFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -504,12 +504,12 @@ func (f *ServiceMeshFeature) getSupportLevel(filters SupportLevelFilters) models
 	return models.SupportLevelDevPreview
 }
 
-func (f *ServiceMeshFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *ServiceMeshFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *ServiceMeshFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *ServiceMeshFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *ServiceMeshFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -542,12 +542,12 @@ func (f *ServerLessFeature) getSupportLevel(filters SupportLevelFilters) models.
 	return models.SupportLevelDevPreview
 }
 
-func (f *ServerLessFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *ServerLessFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *ServerLessFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *ServerLessFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *ServerLessFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -589,16 +589,16 @@ func (f *OpenShiftAIFeature) getSupportLevel(filters SupportLevelFilters) models
 	return models.SupportLevelDevPreview
 }
 
-func (f *OpenShiftAIFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (f *OpenShiftAIFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 	}
 }
 
-func (f *OpenShiftAIFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *OpenShiftAIFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		// These aren't directly incompatible with OpenShift AI, rather with ODF, but the feature support
 		// mechanism doesn't currently understand operator dependencies, so we need to add these explicitly.
 		models.FeatureSupportLevelIDLVM,
@@ -633,13 +633,13 @@ func (f *AuthorinoFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelDevPreview
 }
 
-func (f *AuthorinoFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (f *AuthorinoFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 	}
 }
 
-func (f *AuthorinoFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
+func (f *AuthorinoFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
 	return nil
 }
 
@@ -681,17 +681,17 @@ func (feature *OscFeature) getSupportLevel(filters SupportLevelFilters) models.S
 	return models.SupportLevelTechPreview
 }
 
-func (feature *OscFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
+func (feature *OscFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
 	incompatibleArchitecture := []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
-	return &incompatibleArchitecture
+	return incompatibleArchitecture
 }
 
-func (feature *OscFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *OscFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDVSPHEREINTEGRATION,
 	}
@@ -735,16 +735,16 @@ func (feature *NmstateFeature) getSupportLevel(filters SupportLevelFilters) mode
 	return models.SupportLevelSupported
 }
 
-func (feature *NmstateFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (feature *NmstateFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 	}
 }
 
-func (feature *NmstateFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (feature *NmstateFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDNUTANIXINTEGRATION,
 		models.FeatureSupportLevelIDEXTERNALPLATFORM,
 		models.FeatureSupportLevelIDEXTERNALPLATFORMOCI,
@@ -781,16 +781,16 @@ func (f *AMDGPUFeature) getSupportLevel(filters SupportLevelFilters) models.Supp
 	return models.SupportLevelDevPreview
 }
 
-func (f *AMDGPUFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{
+func (f *AMDGPUFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{
 		models.ArchitectureSupportLevelIDARM64ARCHITECTURE,
 		models.ArchitectureSupportLevelIDPPC64LEARCHITECTURE,
 		models.ArchitectureSupportLevelIDS390XARCHITECTURE,
 	}
 }
 
-func (f *AMDGPUFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *AMDGPUFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *AMDGPUFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -823,12 +823,12 @@ func (f *KMMFeature) getSupportLevel(filters SupportLevelFilters) models.Support
 	return models.SupportLevelDevPreview
 }
 
-func (f *KMMFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *KMMFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *KMMFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{}
+func (f *KMMFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{}
 }
 
 func (f *KMMFeature) getFeatureActiveLevel(cluster *common.Cluster, _ *models.InfraEnv, clusterUpdateParams *models.V2ClusterUpdateParams, _ *models.InfraEnvUpdateParams) featureActiveLevel {
@@ -857,12 +857,12 @@ func (f *NodeHealthcheckFeature) getSupportLevel(filters SupportLevelFilters) mo
 	return models.SupportLevelDevPreview
 }
 
-func (f *NodeHealthcheckFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *NodeHealthcheckFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *NodeHealthcheckFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *NodeHealthcheckFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 	}
 }
@@ -893,12 +893,12 @@ func (f *SelfNodeRemediationFeature) getSupportLevel(filters SupportLevelFilters
 	return models.SupportLevelDevPreview
 }
 
-func (f *SelfNodeRemediationFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *SelfNodeRemediationFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *SelfNodeRemediationFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *SelfNodeRemediationFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 	}
 }
@@ -929,12 +929,12 @@ func (f *FenceAgentsRemediationFeature) getSupportLevel(filters SupportLevelFilt
 	return models.SupportLevelDevPreview
 }
 
-func (f *FenceAgentsRemediationFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *FenceAgentsRemediationFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *FenceAgentsRemediationFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *FenceAgentsRemediationFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 	}
 }
@@ -965,12 +965,12 @@ func (f *NodeMaintenanceFeature) getSupportLevel(filters SupportLevelFilters) mo
 	return models.SupportLevelDevPreview
 }
 
-func (f *NodeMaintenanceFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *NodeMaintenanceFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *NodeMaintenanceFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *NodeMaintenanceFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 	}
 }
@@ -1001,12 +1001,12 @@ func (f *KubeDeschedulerFeature) getSupportLevel(filters SupportLevelFilters) mo
 	return models.SupportLevelDevPreview
 }
 
-func (f *KubeDeschedulerFeature) getIncompatibleArchitectures(_ *string) *[]models.ArchitectureSupportLevelID {
-	return &[]models.ArchitectureSupportLevelID{}
+func (f *KubeDeschedulerFeature) getIncompatibleArchitectures(_ *string) []models.ArchitectureSupportLevelID {
+	return []models.ArchitectureSupportLevelID{}
 }
 
-func (f *KubeDeschedulerFeature) getIncompatibleFeatures(string) *[]models.FeatureSupportLevelID {
-	return &[]models.FeatureSupportLevelID{
+func (f *KubeDeschedulerFeature) getIncompatibleFeatures(string) []models.FeatureSupportLevelID {
+	return []models.FeatureSupportLevelID{
 		models.FeatureSupportLevelIDSNO,
 	}
 }

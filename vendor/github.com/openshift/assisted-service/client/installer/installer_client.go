@@ -32,6 +32,9 @@ type API interface {
 	   GetClusterSupportedPlatforms A list of platforms that this cluster can support in its current configuration.*/
 	GetClusterSupportedPlatforms(ctx context.Context, params *GetClusterSupportedPlatformsParams) (*GetClusterSupportedPlatformsOK, error)
 	/*
+	   GetFeatureSupports Retrieves the features support levels for each OpenShift version.*/
+	GetFeatureSupports(ctx context.Context, params *GetFeatureSupportsParams) (*GetFeatureSupportsOK, error)
+	/*
 	   GetInfraEnv Retrieves the details of the infra-env.*/
 	GetInfraEnv(ctx context.Context, params *GetInfraEnvParams) (*GetInfraEnvOK, error)
 	/*
@@ -330,6 +333,31 @@ func (a *Client) GetClusterSupportedPlatforms(ctx context.Context, params *GetCl
 		return nil, err
 	}
 	return result.(*GetClusterSupportedPlatformsOK), nil
+
+}
+
+/*
+GetFeatureSupports Retrieves the features support levels for each OpenShift version.
+*/
+func (a *Client) GetFeatureSupports(ctx context.Context, params *GetFeatureSupportsParams) (*GetFeatureSupportsOK, error) {
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "GetFeatureSupports",
+		Method:             "GET",
+		PathPattern:        "/v2/support-levels/feature-supports",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http", "https"},
+		Params:             params,
+		Reader:             &GetFeatureSupportsReader{formats: a.formats},
+		AuthInfo:           a.authInfo,
+		Context:            ctx,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetFeatureSupportsOK), nil
 
 }
 
